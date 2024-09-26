@@ -1,0 +1,28 @@
+{
+  "name": "ee",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vite --host --port 8080",
+    "serve": "vite --host --port 8080",
+    "build-staging": "vite build --mode staging",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "ant-design-vue": "^4.2.3",
+    "peerjs": "^1.5.4",
+    "pinia": "^2.2.1",
+    "socket.io-client": "^4.7.5",
+    "vue": "^3.2.33",
+    "vue-router": "^4.0.14"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.2.3",
+    "@vue/compiler-sfc": "^3.2.33",
+    "less": "^4.1.2",
+    "less-loader": "^10.2.0",
+    "terser": "^5.19.1",
+    "unplugin-vue-components": "^0.27.4",
+    "vite": "^4.4.4"
+  }
+}
