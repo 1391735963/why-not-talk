@@ -7,16 +7,16 @@ const { Service } = require("ee-core");
  * 示例服务（service层为单例）
  * @class
  */
-class ExampleService extends Service {
+class FloatingWindowService extends Service {
   constructor(ctx) {
     super(ctx);
-    Log.info("注册1");
+    Log.info("注册");
   }
 
   /**
-   * test
+   * floatWindow
    */
-  async test(args) {
+  async float(args) {
     let obj = {
       status: "ok",
       params: args,
@@ -26,5 +26,5 @@ class ExampleService extends Service {
   }
 }
 
-ExampleService.toString = () => "[class ExampleService]";
-module.exports = ExampleService;
+FloatingWindowService.toString = () => "[class FloatingWindowService]";
+module.exports = FloatingWindowService;

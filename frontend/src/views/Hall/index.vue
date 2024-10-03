@@ -7,7 +7,7 @@
           description="房间成员"
         >
           <template #title>
-            <a href="https://www.antdv.com/">{{ item }}</a>
+            <span @click="pushVideoPage(item)">{{ item }}</span>
           </template>
           <template #avatar>
             <a-avatar src="https://img1.baidu.com/it/u=1264631825,3307569&fm=253&fmt=auto&app=120&f=JPEG?w=666&h=500" />
@@ -21,9 +21,11 @@
 
 <script setup>
 import storeIndex from "@/store/index";
-import {computed} from 'vue';
+import {computed,watch} from 'vue';
 import { storeToRefs } from 'pinia';
 import { useRouter } from 'vue-router';
+import {videoStart } from "@/utils/userList"
+
 const router = useRouter();
 const store = storeIndex();
 const { userName, login, connectUri, chatBox, userList, videoChat, back } = storeToRefs(store);
@@ -34,7 +36,11 @@ const spin = computed(() => {
     }
     return true
 })
+const pushVideoPage = (params) => {
+  router.push("/video")
+  videoStart(params);
 
+}
 </script>
 
 <style lang="scss" scoped>

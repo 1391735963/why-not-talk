@@ -36,6 +36,7 @@
     </a-form-item>
       </a-form>
     </div>
+    <!-- <button @click="sendMessage">向electron发送消息</button> -->
   </div>
 </template>
 
@@ -45,7 +46,8 @@ import { reactive, ref } from "vue";
 import { useRouter } from 'vue-router';
 import { initSocket } from '../../utils/socket';
 import { storeToRefs } from 'pinia';
-
+import {ipc} from '../../utils/ipcRenderer';
+import {ipcApiRoute} from '../../api/main';
 import storeIndex from "@/store/index";
 
 const router = useRouter();
@@ -67,6 +69,13 @@ const onFinish = (values) => {
 const onFinishFailed = (errorInfo) => {
   
 };
+
+const sendMessage = (params) => {
+  ipc.invoke(ipcApiRoute.floatWindow , {name:'张三'}).then(r => {
+	// r为返回的数据
+  console.log(r);
+})
+}
 </script>
 
 <style lang="less" scoped>

@@ -1,7 +1,7 @@
 {
-  "name": "ee",
-  "version": "3.12.0",
-  "description": "A fast, desktop software development framework",
+  "name": "why-not-talk",
+  "version": "1.0.0",
+  "description": "P2P call software based on WebRTC",
   "main": "main.js",
   "scripts": {
     "dev": "ee-bin dev",
@@ -36,14 +36,15 @@
     "build-lp-64": "electron-builder --config=./electron/config/builder.json -l=pacman --x64",
     "test": "set DEBUG=* && electron . --env=local"
   },
-  "repository": "https://github.com/dromara/electron-egg.git",
+  "repository": "https://github.com/1391735963/why-not-talk",
   "keywords": [
-    "Electron",
-    "electron-egg",
-    "ElectronEgg"
+    "WebRTC",
+    "WebRTC Communication",
+    "Communication",
+    "Local Area Network"
   ],
-  "author": "哆啦好梦, Inc <530353222@qq.com>",
-  "license": "Apache",
+  "author": "L1ngwl<1391735963@qq.com>",
+  "license": "Apache-2.0",
   "devDependencies": {
     "@electron/rebuild": "^3.2.13",
     "debug": "^4.3.3",
@@ -52,6 +53,7 @@
     "electron-builder": "^23.6.0",
     "eslint": "^5.13.0",
     "eslint-plugin-prettier": "^3.0.1",
+    "icon-gen": "^5.0.0",
     "nodemon": "^2.0.16"
   },
   "dependencies": {

@@ -8,13 +8,6 @@ const constantRouterMap = [
     path: "/",
     name: "Example",
     redirect: { name: "login" },
-    children: [
-      {
-        path: "/call",
-        name: "call",
-        component: () => import("@/views/Call/index.vue"),
-      },
-    ],
   },
   {
     path: "/login",
@@ -25,8 +18,16 @@ const constantRouterMap = [
   },
   {
     path: "/hall",
+    name: "hall",
     component: () => {
       return import("@/views/Hall/index.vue");
+    },
+  },
+  {
+    path: "/video",
+    name: "video",
+    component: () => {
+      return import("@/views/Video/index.vue");
     },
   },
 ];

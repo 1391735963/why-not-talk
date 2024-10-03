@@ -5,13 +5,13 @@ const Log = require("ee-core/log");
 const Services = require("ee-core/services");
 
 /**
- * example
+ * FloatingWindow
  * @class
  */
-class ExampleController extends Controller {
+class FloatingWindowController extends Controller {
   constructor(ctx) {
     super(ctx);
-    Log.info("注册2");
+    Log.info("注册");
   }
 
   /**
@@ -21,15 +21,15 @@ class ExampleController extends Controller {
    */
 
   /**
-   * test
+   * floatWindow
    */
-  async test() {
-    const result = await Services.get("example").test("electron");
+  async float() {
+    const result = await Services.get("floatingwindow");
     Log.info("service result:", result);
 
     return "hello electron-egg";
   }
 }
 
-ExampleController.toString = () => "[class ExampleController]";
-module.exports = ExampleController;
+FloatingWindowController.toString = () => "[class FloatingWindowController]";
+module.exports = FloatingWindowController;
