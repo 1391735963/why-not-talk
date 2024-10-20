@@ -1,4 +1,5 @@
 <template>
+  <!-- <NavBar/> -->
   <router-view/>
 </template>
 
@@ -9,5 +10,8 @@ setup() {
   document.getElementById('loadingPage').remove()
 }
 }
+</script>
+<script setup>
+import NavBar from "@/components/NavBar/index.vue"
 </script>
 <style lang="less"></style>

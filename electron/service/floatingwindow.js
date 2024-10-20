@@ -21,9 +21,9 @@ class FloatingWindowService extends Service {
       status: "ok",
       params: args,
     };
-
     return obj;
   }
+  
 }
 
 FloatingWindowService.toString = () => "[class FloatingWindowService]";
