@@ -11,7 +11,7 @@ setup() {
 }
 }
 </script>
-<script setup>
-import NavBar from "@/components/NavBar/index.vue"
-</script>
+<!-- <script setup>
+// import NavBar from "@/components/NavBar/index.vue"
+</script> -->
 <style lang="less"></style>

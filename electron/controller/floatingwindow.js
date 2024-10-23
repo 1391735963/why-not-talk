@@ -23,9 +23,9 @@ class FloatingWindowController extends Controller {
   /**
    * floatWindow
    */
-  async float() {
+  async float(res) {
     const result = await Services.get("floatingwindow");
-    Log.info("service result:", result);
+    Log.info("service result:", result, res);
 
     return "hello electron-egg";
   }

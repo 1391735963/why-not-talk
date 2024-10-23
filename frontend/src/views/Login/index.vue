@@ -57,11 +57,14 @@
       <a-button type="primary" @click="setUserName">确定</a-button>
     </div>
     <div v-else>
-      <a-select v-model:value="formState.houseOwner" show-search style="width: 100%" placeholder="选择通话人" :options="options"
+      <a-select v-model:value="formState.houseOwner" show-search placeholder="选择通话人" :options="options"
+      style="width: 300px"
         @change="handleChange"
         @search="handleSearch"
         >
-        <a-select-option v-for="item in IPOptions" :value="item.ip">{{ item.name }}({{ item.ip }})</a-select-option>
+        <a-select-option v-if="unknowIp!==null" :value="unknowIp">{{ unknowIp }}</a-select-option>
+        <a-select-option v-for="item in IPOptions" :value="item.ip" :key="item.ip">{{ item.name }}({{ item.ip }})</a-select-option>
+
       </a-select>
       <!-- <a-input v-model:value="formState.houseOwner" placeholder="房主IP地址" disabled="true"> -->
       <a-button type="primary" @click="onFinish">进入</a-button>
@@ -83,6 +86,7 @@ import storeIndex from "@/store/index";
 
 const router = useRouter();
 const store = storeIndex();
+const unknowIp = ref(null);
 const localUserName = ref(localStorage.getItem("userName"));
 const localHouse = ref(localStorage.getItem("houseOwner"))
 const IPOptions = ref(
@@ -111,11 +115,20 @@ const handleChange = (val) => {
   localStorage.setItem("houseOwner", val)
 }
 const handleSearch = (val) => {
-  if (!IPOptions.value.some(item => item.ip === val)) {
-    formState.houseOwner = val
-    localStorage.setItem("houseOwner", val)
+  console.log("🚀 ~ handleSearch ~ val:", val)
+  if (!val) {
+    unknowIp.value = null
+    return;
   }
+  const isInclude = IPOptions.value.some(item => item.ip.includes(val))
+  // 若不存在
+  if (!isInclude) {
+    unknowIp.value = val
+  }
+  formState.houseOwner = val
+  localStorage.setItem("houseOwner", val)
 }
+
 const onFinishFailed = (errorInfo) => {
 
 };
@@ -126,6 +139,7 @@ const sendMessage = (params) => {
     console.log(r);
   })
 }
+sendMessage();
 
 const getIPV4 = (params) => {
   ipc.invoke(ipcApiRoute.getLocalIPV4).then(r => {
@@ -205,8 +219,9 @@ const setUserName = (params) => {
   flex-direction: column;
   justify-content: center;
   margin-right: 20px;
-
+  
   &>div>* {
+    width: 100%;
     margin-top: 20px;
   }
 }

@@ -141,7 +141,7 @@ function _breakRoom(data) {
   }
 }
 server.listen(1024, function () {
-  console.log("Socket Open在1024端口");
+  console.log("Socket Open with port 1024");
 });
 // server.listen(3000, () => {
 //   console.log(`HTTP server is running on port 3000`);
