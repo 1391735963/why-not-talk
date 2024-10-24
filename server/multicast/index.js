@@ -2,11 +2,37 @@ const dgram = require("dgram");
 const WebSocket = require("ws");
 const serverPort = 11451;
 const clientPort = 11452;
-const broadcastAddress = "255.255.255.255";
+const host = "127.0.0.1";
+const serverIp = "239.255.255.253";
+const clientIp = "239.255.255.254";
+const broadcastAddress = "239.255.255.254";
 
-const socket = dgram.createSocket("udp4");
+const server = dgram.createSocket("udp4");
+const client = dgram.createSocket("udp4");
 const webSocketServer = new WebSocket.Server({ port: 11453 });
 let wsObj = {};
+// 服务
+server.on("listening", function () {
+  server.setMulticastTTL(128);
+  server.addMembership(serverIp);
+});
+setInterval(broadCast, 1000);
+function broadCast() {
+  console.log("broadcast");
+  let buf = new Buffer(new Date().toLocaleString());
+  server.send(buf, 0, buf.length, serverPort, serverIp);
+}
+// 客户端
+client.on("listening", function () {
+  client.addMembership(serverIp);
+});
+client.on("message", function (message, remote) {
+  wsObj.send(`[websocket云端]您已经连接云端!数据推送中!${wsObj}`);
+  console.log(message.toString());
+  console.log("get message");
+});
+client.bind(serverPort, "192.168.124.13");
+
 console.log(
   "multicast is running",
   "serverPort",
@@ -14,64 +40,6 @@ console.log(
   "clientPort",
   clientPort
 );
-socket.on("listening", () => {
-  const address = socket.address();
-  console.log(`Socket listening on ${address.address}:${address.port}`);
-});
-
-socket.on("message", (msg, rinfo) => {
-  const message = msg.toString();
-  console.log(
-    `Received message from ${rinfo.address}:${rinfo.port}: ${message}`
-  );
-
-  // 检查消息来源，避免自监听
-  if (rinfo.address !== "127.0.0.1" && rinfo.port !== clientPort) {
-    if (message === "DISCOVER") {
-      const response = "SERVER_INFO:127.0.0.1:27015";
-      socket.send(
-        response,
-        0,
-        response.length,
-        rinfo.port,
-        rinfo.address,
-        (err) => {
-          if (err) {
-            console.error("Error sending response:", err);
-          }
-        }
-      );
-      if (!!wsObj) {
-        wsObj.send({
-          ip: rinfo.address,
-          port: rinfo.port,
-          timeStamp: Date.now(),
-        });
-      }
-    } else if (message.startsWith("SERVER_INFO")) {
-      console.log("Discovered server:", message);
-    }
-  }
-});
-
-socket.bind(clientPort, () => {
-  const message = Buffer.from("DISCOVER");
-  socket.setBroadcast(true); // 允许发送广播消息
-  socket.send(
-    message,
-    0,
-    message.length,
-    serverPort,
-    broadcastAddress,
-    (err) => {
-      if (err) {
-        console.error("Error sending discovery message:", err);
-      } else {
-        console.log("Discovery message sent");
-      }
-    }
-  );
-});
 
 webSocketServer.on("connection", (ws) => {
   console.log("WS connected");

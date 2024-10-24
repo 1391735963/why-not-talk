@@ -78,7 +78,7 @@ import { UserOutlined, InfoCircleOutlined } from "@ant-design/icons-vue"
 import { message } from 'ant-design-vue';;
 import { reactive, ref } from "vue";
 import { useRouter } from 'vue-router';
-import { initSocket } from '../../utils/socket';
+import { initSocket, socket } from '../../utils/socket';
 import { storeToRefs } from 'pinia';
 import { ipc } from '../../utils/ipcRenderer';
 import { ipcApiRoute } from '../../api/main';
@@ -102,7 +102,7 @@ const formState = reactive({
   userName: localUserName.value,
   houseOwner: localHouse.value
 })
-
+const ws = new WebSocket("ws://localhost:11453");
 const onFinish = (values) => {
   connectUri.value = formState.houseOwner
   userName.value = formState.userName
@@ -157,6 +157,13 @@ const setUserName = (params) => {
   localStorage.setItem("userName", formState.userName)
   localUserName.value = formState.userName;
   console.log(params);
+}
+
+ws.onopen = () => {
+  console.log("websocket connected");
+}
+ws.onmessage = (e) => {
+  console.log(e)
 }
 </script>
 
