@@ -163,8 +163,16 @@ ws.onopen = () => {
   console.log("websocket connected");
 }
 ws.onmessage = (e) => {
-  console.log(e)
+  const receive = JSON.parse(e.data)
+  const isInclude = IPOptions.value.some(item => item.ip.includes(val))
+  IPOptions.value.push({
+    name: receive.userName,
+    ip: receive.ip,
+    avatar:''
+  })
+  console.log()
 }
+
 </script>
 
 <style lang="less" scoped>

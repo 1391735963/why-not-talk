@@ -1,58 +1,70 @@
 const dgram = require("dgram");
-const WebSocket = require("ws");
-const serverPort = 11451;
-const clientPort = 11452;
-const host = "127.0.0.1";
-const serverIp = "239.255.255.253";
-const clientIp = "239.255.255.254";
-const broadcastAddress = "239.255.255.254";
-
+const ServerConfig = require("../config/index.js");
+const BaseSouceData = require("../pojo/index.js");
+const CWS = require("../ws/index.js");
+const { times } = require("lodash");
 const server = dgram.createSocket("udp4");
 const client = dgram.createSocket("udp4");
-const webSocketServer = new WebSocket.Server({ port: 11453 });
-let wsObj = {};
+const cws = new CWS();
 // 服务
+server.on("message", function (e1, e2) {
+  // 本机不进行处理
+  if (getLocalIPV4().some((ip) => ip === e2.address)) {
+    return;
+  }
+  console.log("🚀 ~ e1:", e1.toString());
+  let tempObj = JSON.parse(e1.toString());
+  tempObj.data.ip = e2.address;
+  const findUserObj = JSON.stringify(tempObj);
+  cws.wsObj.send(JSON.stringify(findUserObj));
+});
 server.on("listening", function () {
-  server.setMulticastTTL(128);
-  server.addMembership(serverIp);
+  console.log("server is listening2");
 });
-setInterval(broadCast, 1000);
-function broadCast() {
-  console.log("broadcast");
-  let buf = new Buffer(new Date().toLocaleString());
-  server.send(buf, 0, buf.length, serverPort, serverIp);
-}
+server.bind(ServerConfig.udpServerPort);
 // 客户端
-client.on("listening", function () {
-  client.addMembership(serverIp);
+client.bind((params) => {
+  client.setBroadcast(true);
 });
-client.on("message", function (message, remote) {
-  wsObj.send(`[websocket云端]您已经连接云端!数据推送中!${wsObj}`);
-  console.log(message.toString());
-  console.log("get message");
-});
-client.bind(serverPort, "192.168.124.13");
+setInterval(() => {
+  console.log("send message");
+  const findUserObj = new BaseSouceData({
+    time: Date.now(),
+    userName: null,
+    startTime: null,
+    avatar: null,
+  });
+  const message = Buffer.from(JSON.stringify(findUserObj), "utf-8");
+  client.send(
+    message,
+    0,
+    message.length,
+    ServerConfig.udpServerPort,
+    ServerConfig.multicastIp
+  );
+}, 1000 * 5);
 
 console.log(
   "multicast is running",
   "serverPort",
-  serverPort,
+  ServerConfig.udpServerPort,
   "clientPort",
-  clientPort
+  ServerConfig.udpClientPort
 );
 
-webSocketServer.on("connection", (ws) => {
-  console.log("WS connected");
-  wsObj = ws;
-  ws.send(`[websocket云端]您已经连接云端!数据推送中!`);
-  let index = 1;
-  const interval = setInterval(() => {
-    ws.send(`[websocket]数据推送第${index}次`);
-    index++;
-  }, 1000 * 10);
-
-  ws.on("close", () => {
-    clearInterval(interval); // 清除定时器
-    console.log("[服务器]：客官下次再来呢~");
-  });
-});
+const getLocalIPV4 = (ver = 4) => {
+  const interfaces = require("os").networkInterfaces();
+  let ips = [];
+  for (let netDev in interfaces) {
+    for (let netProt of interfaces[netDev]) {
+      if (
+        netProt.family === `IPv${ver}` &&
+        !netProt.internal &&
+        netProt.address !== "127.0.0.1"
+      ) {
+        ips.push(netProt.address);
+      }
+    }
+  }
+  return ips;
+};
