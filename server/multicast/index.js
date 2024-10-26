@@ -1,6 +1,6 @@
 const dgram = require("dgram");
 const ServerConfig = require("../config/index.js");
-const BaseSouceData = require("../pojo/index.js");
+const BaseSourceData = require("../pojo/index.js");
 const CWS = require("../ws/index.js");
 const { times } = require("lodash");
 const server = dgram.createSocket("udp4");
@@ -16,7 +16,9 @@ server.on("message", function (e1, e2) {
   let tempObj = JSON.parse(e1.toString());
   tempObj.data.ip = e2.address;
   const findUserObj = JSON.stringify(tempObj);
-  cws.wsObj.send(JSON.stringify(findUserObj));
+  if (!!cws.wsObj) {
+    cws.wsObj.send(findUserObj);
+  }
 });
 server.on("listening", function () {
   console.log("server is listening2");
@@ -28,13 +30,13 @@ client.bind((params) => {
 });
 setInterval(() => {
   console.log("send message");
-  const findUserObj = new BaseSouceData({
+  const findUserObj = new BaseSourceData({
     time: Date.now(),
-    userName: null,
-    startTime: null,
-    avatar: null,
+    userName: cws.userName,
+    startTime: cws.startTime,
+    avatar: cws.avatar,
   });
-  const message = Buffer.from(JSON.stringify(findUserObj), "utf-8");
+  const message = Buffer.from(JSON.stringify(findUserObj));
   client.send(
     message,
     0,

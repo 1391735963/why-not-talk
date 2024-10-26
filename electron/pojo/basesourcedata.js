@@ -1,4 +1,4 @@
-class BaseSouceData {
+class BaseSourceData {
   obj = {
     code: 200,
     data: {},
@@ -19,4 +19,4 @@ class BaseSouceData {
   }
 }
 
-module.exports = BaseSouceData;
+module.exports = BaseSourceData;

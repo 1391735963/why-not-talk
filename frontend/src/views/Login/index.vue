@@ -76,14 +76,14 @@
 <script setup>
 import { UserOutlined, InfoCircleOutlined } from "@ant-design/icons-vue"
 import { message } from 'ant-design-vue';;
-import { reactive, ref } from "vue";
+import { reactive, ref,nextTick } from "vue";
 import { useRouter } from 'vue-router';
 import { initSocket, socket } from '../../utils/socket';
 import { storeToRefs } from 'pinia';
 import { ipc } from '../../utils/ipcRenderer';
 import { ipcApiRoute } from '../../api/main';
 import storeIndex from "@/store/index";
-
+import BaseSourceData from '@/utils/baseSourceData';
 const router = useRouter();
 const store = storeIndex();
 const unknowIp = ref(null);
@@ -156,21 +156,48 @@ const setUserName = (params) => {
   }
   localStorage.setItem("userName", formState.userName)
   localUserName.value = formState.userName;
+  ws.send(JSON.stringify(new BaseSourceData({
+    userName: formState.userName,
+    startTime: new Date().getTime(),
+    avatar: null,
+  },100)));
   console.log(params);
 }
 
 ws.onopen = () => {
-  console.log("websocket connected");
+  console.log("websocket connected",formState.userName);
+  if (!formState.userName) {
+    ws.send(JSON.stringify(new BaseSourceData({
+      userName: null,
+      startTime: new Date().getTime(),
+      avatar: null,
+    },404)));
+  } else {
+    ws.send(JSON.stringify(new BaseSourceData({
+    userName: formState.userName,
+    startTime: new Date().getTime(),
+    avatar: null,
+  },100)));
+  }
+  
+  // ws.send("123456789")
+
 }
 ws.onmessage = (e) => {
   const receive = JSON.parse(e.data)
-  const isInclude = IPOptions.value.some(item => item.ip.includes(val))
-  IPOptions.value.push({
-    name: receive.userName,
-    ip: receive.ip,
+  console.log("🚀 ~ receive:", receive)
+  const isInclude = IPOptions.value.some(item => item.ip.includes(receive.data.ip))
+  if (isInclude) {
+    return;
+  }
+  nextTick().then(() => {
+    IPOptions.value.push({
+    name: receive.data.userName,
+    ip: receive.data.ip,
     avatar:''
   })
-  console.log()
+  })
+  
 }
 
 </script>
