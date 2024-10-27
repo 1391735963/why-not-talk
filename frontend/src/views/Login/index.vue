@@ -102,7 +102,7 @@ const formState = reactive({
   userName: localUserName.value,
   houseOwner: localHouse.value
 })
-const ws = new WebSocket("ws://localhost:11453");
+const ws = new WebSocket("ws://localhost:26557");
 const onFinish = (values) => {
   connectUri.value = formState.houseOwner
   userName.value = formState.userName
