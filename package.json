@@ -1,6 +1,6 @@
 {
   "name": "why-not-talk",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "P2P call software based on WebRTC",
   "main": "main.js",
   "scripts": {

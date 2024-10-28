@@ -57,11 +57,14 @@
       <a-button type="primary" @click="setUserName">确定</a-button>
     </div>
     <div v-else>
-      <a-select v-model:value="formState.houseOwner" show-search style="width: 100%" placeholder="选择通话人" :options="options"
+      <a-select v-model:value="formState.houseOwner" show-search placeholder="选择通话人" :options="options"
+      style="width: 300px"
         @change="handleChange"
         @search="handleSearch"
         >
-        <a-select-option v-for="item in IPOptions" :value="item.ip">{{ item.name }}({{ item.ip }})</a-select-option>
+        <a-select-option v-if="unknowIp!==null" :value="unknowIp">{{ unknowIp }}</a-select-option>
+        <a-select-option v-for="item in IPOptions" :value="item.ip" :key="item.ip">{{ item.name }}({{ item.ip }})</a-select-option>
+
       </a-select>
       <!-- <a-input v-model:value="formState.houseOwner" placeholder="房主IP地址" disabled="true"> -->
       <a-button type="primary" @click="onFinish">进入</a-button>
@@ -73,16 +76,17 @@
 <script setup>
 import { UserOutlined, InfoCircleOutlined } from "@ant-design/icons-vue"
 import { message } from 'ant-design-vue';;
-import { reactive, ref } from "vue";
+import { reactive, ref,nextTick } from "vue";
 import { useRouter } from 'vue-router';
-import { initSocket } from '../../utils/socket';
+import { initSocket, socket } from '../../utils/socket';
 import { storeToRefs } from 'pinia';
 import { ipc } from '../../utils/ipcRenderer';
 import { ipcApiRoute } from '../../api/main';
 import storeIndex from "@/store/index";
-
+import BaseSourceData from '@/utils/baseSourceData';
 const router = useRouter();
 const store = storeIndex();
+const unknowIp = ref(null);
 const localUserName = ref(localStorage.getItem("userName"));
 const localHouse = ref(localStorage.getItem("houseOwner"))
 const IPOptions = ref(
@@ -98,7 +102,7 @@ const formState = reactive({
   userName: localUserName.value,
   houseOwner: localHouse.value
 })
-
+const ws = new WebSocket("ws://localhost:26557");
 const onFinish = (values) => {
   connectUri.value = formState.houseOwner
   userName.value = formState.userName
@@ -111,11 +115,20 @@ const handleChange = (val) => {
   localStorage.setItem("houseOwner", val)
 }
 const handleSearch = (val) => {
-  if (!IPOptions.value.some(item => item.ip === val)) {
-    formState.houseOwner = val
-    localStorage.setItem("houseOwner", val)
+  console.log("🚀 ~ handleSearch ~ val:", val)
+  if (!val) {
+    unknowIp.value = null
+    return;
   }
+  const isInclude = IPOptions.value.some(item => item.ip.includes(val))
+  // 若不存在
+  if (!isInclude) {
+    unknowIp.value = val
+  }
+  formState.houseOwner = val
+  localStorage.setItem("houseOwner", val)
 }
+
 const onFinishFailed = (errorInfo) => {
 
 };
@@ -126,6 +139,7 @@ const sendMessage = (params) => {
     console.log(r);
   })
 }
+sendMessage();
 
 const getIPV4 = (params) => {
   ipc.invoke(ipcApiRoute.getLocalIPV4).then(r => {
@@ -142,8 +156,50 @@ const setUserName = (params) => {
   }
   localStorage.setItem("userName", formState.userName)
   localUserName.value = formState.userName;
+  ws.send(JSON.stringify(new BaseSourceData({
+    userName: formState.userName,
+    startTime: new Date().getTime(),
+    avatar: null,
+  },100)));
   console.log(params);
 }
+
+ws.onopen = () => {
+  console.log("websocket connected",formState.userName);
+  if (!formState.userName) {
+    ws.send(JSON.stringify(new BaseSourceData({
+      userName: null,
+      startTime: new Date().getTime(),
+      avatar: null,
+    },404)));
+  } else {
+    ws.send(JSON.stringify(new BaseSourceData({
+    userName: formState.userName,
+    startTime: new Date().getTime(),
+    avatar: null,
+  },100)));
+  }
+  
+  // ws.send("123456789")
+
+}
+ws.onmessage = (e) => {
+  const receive = JSON.parse(e.data)
+  console.log("🚀 ~ receive:", receive)
+  const isInclude = IPOptions.value.some(item => item.ip.includes(receive.data.ip))
+  if (isInclude) {
+    return;
+  }
+  nextTick().then(() => {
+    IPOptions.value.push({
+    name: receive.data.userName,
+    ip: receive.data.ip,
+    avatar:''
+  })
+  })
+  
+}
+
 </script>
 
 <style lang="less" scoped>
@@ -205,8 +261,9 @@ const setUserName = (params) => {
   flex-direction: column;
   justify-content: center;
   margin-right: 20px;
-
+  
   &>div>* {
+    width: 100%;
     margin-top: 20px;
   }
 }

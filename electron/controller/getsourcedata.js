@@ -20,7 +20,7 @@ class GetSourceDataContorller extends Controller {
     return result;
   }
   async getLocalIPV6() {
-    const result = await Services.get("getLocalIPV6");
+    const result = await Services.get("getsourcedata").getLocalIPV6();
     Log.info("service result:", result);
     return "hello electron-egg";
   }

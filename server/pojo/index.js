@@ -1,9 +1,7 @@
 class BaseSourceData {
-  obj = {
-    code: 200,
-    data: {},
-    msg: "",
-  };
+  code = 200;
+  data = {};
+  msg = "";
   /**
    * 格式化返回数据
    * @param {obj} data 传递到前端的数据
@@ -11,11 +9,9 @@ class BaseSourceData {
    * @param {string} msg 消息
    */
   constructor(data, code = 200, msg) {
-    this.obj.data = data;
-    this.obj.code = code;
-  }
-  getData() {
-    return { ...this.obj };
+    this.data = data;
+    this.code = code;
+    this.msg = msg;
   }
 }
 

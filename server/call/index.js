@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const ServerConfig = require("../config/index.js");
 const app = express();
 
 app.use(cors());
@@ -140,8 +141,8 @@ function _breakRoom(data) {
     });
   }
 }
-server.listen(1024, function () {
-  console.log("Socket Open在1024端口");
+server.listen(ServerConfig.webRTCServicePort, function () {
+  console.log("Socket Open with port", ServerConfig.webRTCServicePort);
 });
 // server.listen(3000, () => {
 //   console.log(`HTTP server is running on port 3000`);
