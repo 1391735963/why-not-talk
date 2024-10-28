@@ -33,4 +33,4 @@ class CWS {
   }
 }
 
-module.exports = CWS;
+module.exports = new CWS();
