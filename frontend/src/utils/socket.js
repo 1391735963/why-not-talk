@@ -9,12 +9,15 @@ import {
   isCalling,
 } from "./video";
 
+let router = null;
+
 import { storeToRefs } from "pinia";
 const store = storeIndex();
 const { connectUri, login, chatBox, videoChat, myName } = storeToRefs(store);
 let socket; //供其他页面调用
 
-function initSocket(token) {
+function initSocket(token, routerInstance) {
+  router = routerInstance;
   //获取到用户输入的id并传到服务端
   socket = io(`http://${connectUri.value}:1024?token=${token}`, {
     autoConnect: false,
@@ -64,6 +67,7 @@ function inviteVideoHandler(data) {
     let res = confirm(data.msg);
     if (res) {
       allow = 1;
+      router.push("/video");
       startVideoChat(data.token); //用户点击同意后开始初始化视频聊天
       localStorage.setItem("roomNo", data.roomNo); //将房间号保存
     }
