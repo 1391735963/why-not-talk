@@ -1,7 +1,7 @@
 {
-  "productName": "ee",
-  "appId": "com.electron.ee",
-  "copyright": "© 2023 哆啦好梦 Technology Co., Ltd.",
+  "productName": "why-not-talk",
+  "appId": "com.l1ngwl.wnt",
+  "copyright": "© 2024 L1ngwl",
   "directories": {
     "output": "out"
   },
@@ -26,7 +26,7 @@
     "installerHeaderIcon": "build/icons/icon.ico",
     "createDesktopShortcut": true,
     "createStartMenuShortcut": true,
-    "shortcutName": "EE框架"
+    "shortcutName": "why-not-talk"
   },
   "publish": [
     {
