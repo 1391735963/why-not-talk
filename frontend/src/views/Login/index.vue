@@ -106,7 +106,7 @@ const ws = new WebSocket("ws://localhost:26557");
 const onFinish = (values) => {
   connectUri.value = formState.houseOwner
   userName.value = formState.userName
-  initSocket(formState.userName)
+  initSocket(formState.userName,router)
   router.push("/hall")
 };
 const handleChange = (val) => {
