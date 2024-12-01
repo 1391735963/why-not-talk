@@ -9,6 +9,7 @@ class CWS {
   initMessage = null;
   constructor() {
     this.webSocketServer = new WebSocket.Server({
+      host: "127.0.0.1",
       port: ServerConfig.websocketPort,
     });
     this.webSocketServer.on("connection", (ws) => {
